@@ -17,30 +17,36 @@ df= pd.get_dummies(df)
 
 
 
-#split,set colors, normalize
+#split data for later test
 df_train, df_test, y_train, y_test = train_test_split(df, y, random_state=42)
-color = []
 
+#color code for later plot
+color = []
 for i in range(137):
 	if y_train.iloc[i]==0:
 		color.append('r')
 	else:
 		color.append('b')
 
+#Normalize 
 df_train = normalize(df_train)
 df_test = normalize(df_test)
 
+
+#pca for visualization (not needed for classification) 
 #pca = PCA(n_components = 3, random_state = 42).fit(df_train)
 #df_train = pca.transform(df_train,y_train)
 #df_test = pca.transform(df_test, y_test)
 
 
-
+#sklearn method for classification
 knc = KNeighborsClassifier(n_neighbors=13)
 knc = knc.fit(df_train, y_train)
+
+#using fit to score test data
 print(knc.score(df_test,y_test))
 
-
+#plot a visualization(unfortunatly 3 dimensions is the max:(, blame God!)
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax = Axes3D(fig)
