@@ -10,10 +10,10 @@ plt.style.use('ggplot')
 
 #load and clean data
 df = pd.read_csv('train.csv')
-df = df.dropna(axis=0)
+df = df.dropna()
 y = df['Survived']
 df = df.drop(['Survived','Name','Ticket','Cabin','Fare'],1)
-df= pd.get_dummies(df)
+df= pd.get_dummies(df, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
 
 
 
