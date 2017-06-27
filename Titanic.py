@@ -16,14 +16,14 @@ df = pd.read_csv('train.csv')
 y = df['Survived']
 df = df.drop(['PassengerId','Survived','Name','Ticket','Cabin','Fare'],1)
 #df = pd.get_dummies(df, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
-df = pd.get_dummies(df, columns = ['Embarked','Sex'],drop_first = True)
+df = pd.get_dummies(df, columns = ['Embarked', 'Sex','Pclass'], drop_first = True)
 df = df.fillna(df.median())
 
 #df['Age']=normalize(df.loc[:,'Age'].values.reshape(-1,1))
 
 
 #split data for later test
-df_train, df_test, y_train, y_test = train_test_split(df, y, random_state=42)
+df_train, df_test, y_train, y_test = train_test_split(df, y)
 
 #color code for later plot
 color = []
@@ -48,44 +48,38 @@ for i in range(137):
 #ax.scatter(df_train[:,0],df_train[:,1],df_train[:,2], marker='.',c=color, alpha=0.3)
 #plt.show()
 
+
 #KNeighbors method for classification
 knc = KNeighborsClassifier(n_neighbors=13)
-knc = knc.fit(df_train, y_train)
-
-#using fit to score test data
+knc1 = knc.fit(df_train, y_train)
 print("KNC Score:")
 print(knc.score(df_test,y_test))
 
-#plot a visualization(unfortunatly 3 dimensions is the max:(, blame God!)
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#ax = Axes3D(fig)
-#ax.scatter(df_train[:,0],df_train[:,1],df_train[:,2], marker='.',c=color, alpha=0.3)
-#plt.show()
-
-
 #Try svc classification
-svc = SVC(random_state = 42)
-svc1 = svc.fit(df_train,y_train)
+svc = SVC()
+svc1 = svc.fit(df_train, y_train)
 print("SVC Score:")
 print(svc1.score(df_test,y_test))
 
 #Try Decision tree
 dt = DecisionTreeClassifier(criterion = 'entropy')
-dt = dt.fit(df_train, y_train)
+dt1 = dt.fit(df_train, y_train)
 print("Decision Tree Score:")
 print(dt.score(df_test, y_test))
 
-#fit to whole train data set
+#fit to whole train data set.
+knc2 = knc.fit(df, y)
 svc2 = svc.fit(df, y)
+dt2 = dt.fit(df, y)
 
-#use to predict test set
+#clean testing dataset
 dft = pd.read_csv('test.csv')
 dft = dft.drop(['PassengerId','Name','Ticket','Cabin','Fare'],1)
 #dft = pd.get_dummies(dft, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
-dft = pd.get_dummies(dft, columns = ['Sex','Embarked'],drop_first = True)
+dft = pd.get_dummies(dft, columns = ['Embarked','Sex','Pclass'],drop_first = True)
 dft = dft.fillna(dft.median())
 
-#create csv file with results
-pd.DataFrame(svc2.predict(dft)).to_csv('result.csv', header=['Survived'])
+#create csv file with results (SVC because it worked best on average).
+results = pd.DataFrame(svc2.predict(dft))
+results.to_csv('result.csv', header=['Survived'], index_label = 'PassengerId')
 
