@@ -11,12 +11,13 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.tree import DecisionTreeClassifier 
 plt.style.use('ggplot')
 
+
 #load and clean data
 df = pd.read_csv('train.csv')
 y = df['Survived']
 df = df.drop(['PassengerId','Survived','Name','Ticket','Cabin','Fare'],1)
 #df = pd.get_dummies(df, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
-df = pd.get_dummies(df, columns = ['Embarked', 'Sex','Pclass'], drop_first = True)
+df = pd.get_dummies(df, columns = ['Embarked', 'Sex'], drop_first = True)
 df = df.fillna(df.median())
 
 #df['Age']=normalize(df.loc[:,'Age'].values.reshape(-1,1))
@@ -26,13 +27,12 @@ df = df.fillna(df.median())
 df_train, df_test, y_train, y_test = train_test_split(df, y)
 
 #color code for later plot
-color = []
-for i in range(137):
-	if y_train.iloc[i]==0:
-		color.append('r')
+colors = []
+for i in range(891):
+	if y.iloc[i]==0:
+		colors.append('r')
 	else:
-		color.append('b')
-
+		colors.append('b')
 
 #pca for visualization (not needed for classification) 
 #pca = PCA(n_components = 3, random_state = 42)
@@ -41,12 +41,13 @@ for i in range(137):
 #df_train = combined_features.fit(df_train, y_train).transform(df_train)
 #df_test = combined_features.transform(df_test)
 
-#plot a visualization(unfortunatly 3 dimensions is the max:(, blame God!)
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#ax = Axes3D(fig)
-#ax.scatter(df_train[:,0],df_train[:,1],df_train[:,2], marker='.',c=color, alpha=0.3)
-#plt.show()
+#plot a visualization of main features(unfortunatly 3 dimensions is the max:(, blame God!)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax = Axes3D(fig)
+ax.scatter(list(df.iloc[:,0]),list(df.iloc[:,1]),list(df.iloc[:,2]),c=colors, marker = '.',alpha=0.3)
+
+plt.show()
 
 
 #KNeighbors method for classification
@@ -76,7 +77,7 @@ dt2 = dt.fit(df, y)
 dft = pd.read_csv('test.csv')
 dft = dft.drop(['PassengerId','Name','Ticket','Cabin','Fare'],1)
 #dft = pd.get_dummies(dft, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
-dft = pd.get_dummies(dft, columns = ['Embarked','Sex','Pclass'],drop_first = True)
+dft = pd.get_dummies(dft, columns = ['Embarked','Sex'],drop_first = True)
 dft = dft.fillna(dft.median())
 
 #create csv file with results (SVC because it worked best on average).
