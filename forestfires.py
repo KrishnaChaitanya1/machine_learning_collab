@@ -1,4 +1,4 @@
-[# -*- coding: utf-8 -*-
+
 """
 Created on Sat Jun 24 08:22:42 2017
 
@@ -22,7 +22,8 @@ url = r'forestfires.csv'
 #names = ['X', 'Y', 'month', 'day', 'FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 
 #        'wind', 'rain', 'area']
 data = pd.read_csv(url)
-#print(data.head(30)) # X --> x-axis spatial coordinate within the Montesinho park map: 1 to 9
+#print(data.head(30))
+# X --> x-axis spatial coordinate within the Montesinho park map: 1 to 9
 # Y --> y-axis spatial coordinate within the Montesinho park map: 2 to 9
 # ISI --> Initial Spread Index
 # DC --> Drought Code
@@ -33,6 +34,7 @@ data = pd.read_csv(url)
 #print(data.values)
 df = pd.DataFrame(data)
 df.drop(['month', 'day'], axis=1, inplace = True)
+df = pd.get_dummies(df, columns=['X','Y'])
 print(df.head())
 
 # --------------- Splitting
