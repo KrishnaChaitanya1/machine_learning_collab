@@ -18,7 +18,7 @@ from sklearn.svm import SVR
 from xgboost.sklearn import XGBRegressor
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
 # -------------- load dataset
-url = r'C:\Users\kchai\Dropbox\ML Root\The Journey of an Idiot in Machine Learning\Datasets\forestfires.csv'
+url = r'forestfires.csv'
 #names = ['X', 'Y', 'month', 'day', 'FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 
 #        'wind', 'rain', 'area']
 data = pd.read_csv(url)
