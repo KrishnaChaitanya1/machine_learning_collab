@@ -1,20 +1,25 @@
 import pandas as pd
+from sklearn.pipeline import FeatureUnion
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
 from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.preprocessing import normalize
-
+from sklearn.svm import SVC
+from sklearn.feature_selection import SelectKBest
+from sklearn.tree import DecisionTreeClassifier 
 plt.style.use('ggplot')
 
 #load and clean data
 df = pd.read_csv('train.csv')
-df = df.dropna()
 y = df['Survived']
-df = df.drop(['Survived','Name','Ticket','Cabin','Fare'],1)
-df= pd.get_dummies(df, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
+df = df.drop(['PassengerId','Survived','Name','Ticket','Cabin','Fare'],1)
+#df = pd.get_dummies(df, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
+df = pd.get_dummies(df, columns = ['Embarked','Sex'],drop_first = True)
+df = df.fillna(df.median())
 
+#df['Age']=normalize(df.loc[:,'Age'].values.reshape(-1,1))
 
 
 #split data for later test
@@ -28,27 +33,59 @@ for i in range(137):
 	else:
 		color.append('b')
 
-#Normalize 
-df_train = normalize(df_train)
-df_test = normalize(df_test)
-
 
 #pca for visualization (not needed for classification) 
-#pca = PCA(n_components = 3, random_state = 42).fit(df_train)
-#df_train = pca.transform(df_train,y_train)
-#df_test = pca.transform(df_test, y_test)
+#pca = PCA(n_components = 3, random_state = 42)
+#selection = SelectKBest(k=1)
+##combined_features = FeatureUnion([("pca", pca), ("univ_select", selection)])
+#df_train = combined_features.fit(df_train, y_train).transform(df_train)
+#df_test = combined_features.transform(df_test)
 
+#plot a visualization(unfortunatly 3 dimensions is the max:(, blame God!)
+#fig = plt.figure()
+#ax = fig.add_subplot(111)
+#ax = Axes3D(fig)
+#ax.scatter(df_train[:,0],df_train[:,1],df_train[:,2], marker='.',c=color, alpha=0.3)
+#plt.show()
 
-#sklearn method for classification
+#KNeighbors method for classification
 knc = KNeighborsClassifier(n_neighbors=13)
 knc = knc.fit(df_train, y_train)
 
 #using fit to score test data
+print("KNC Score:")
 print(knc.score(df_test,y_test))
 
 #plot a visualization(unfortunatly 3 dimensions is the max:(, blame God!)
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax = Axes3D(fig)
-ax.scatter(df_train[:,0],df_train[:,1],df_train[:,2], marker='.',c=color, alpha=0.3)
-plt.show()
+#fig = plt.figure()
+#ax = fig.add_subplot(111)
+#ax = Axes3D(fig)
+#ax.scatter(df_train[:,0],df_train[:,1],df_train[:,2], marker='.',c=color, alpha=0.3)
+#plt.show()
+
+
+#Try svc classification
+svc = SVC(random_state = 42)
+svc1 = svc.fit(df_train,y_train)
+print("SVC Score:")
+print(svc1.score(df_test,y_test))
+
+#Try Decision tree
+dt = DecisionTreeClassifier(criterion = 'entropy')
+dt = dt.fit(df_train, y_train)
+print("Decision Tree Score:")
+print(dt.score(df_test, y_test))
+
+#fit to whole train data set
+svc2 = svc.fit(df, y)
+
+#use to predict test set
+dft = pd.read_csv('test.csv')
+dft = dft.drop(['PassengerId','Name','Ticket','Cabin','Fare'],1)
+#dft = pd.get_dummies(dft, columns = ['Sex','Embarked','Parch','Pclass','SibSp'],drop_first = True)
+dft = pd.get_dummies(dft, columns = ['Sex','Embarked'],drop_first = True)
+dft = dft.fillna(dft.median())
+
+#create csv file with results
+pd.DataFrame(svc2.predict(dft)).to_csv('result.csv', header=['Survived'])
+
