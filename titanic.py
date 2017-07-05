@@ -24,7 +24,7 @@ df_train.drop(['PassengerId', 'Name', 'Parch', 'Ticket', 'Fare', 'Cabin', 'Embar
 Y = df_train['Survived']
 X = df_train.drop(['Survived'], axis=1)
 #print(X.head())
-x_train, x_cv, y_train, y_cv = train_test_split(X, Y, test_size=0.3)
+x_train, x_cv, y_train, y_cv = train_test_split(X, Y, test_size=0.3, random_state=42)
 #print(x_train.head())
 
 # ------------------- Testing Data
