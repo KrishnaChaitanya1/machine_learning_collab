@@ -1,0 +1,5 @@
+So this is how you create a class in python
+  
+         class MyFirstClass:
+            pass
+The class name should follow standard Python variable naming rules (must start with a letter or _)
